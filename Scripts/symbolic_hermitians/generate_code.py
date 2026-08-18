@@ -16,6 +16,8 @@ parser.add_argument("-c", "--clean", action="store_true", help="Clean up any pre
 parser.add_argument("-rn", "--rhs_normalize", action="store_true", help="Normalize F when applying the RHS update F += dt * dFdt (limits to 2nd order in time).")
 parser.add_argument("-nm", "--num_moments", type=int, default=2, help="Number of moments to compute.")
 parser.add_argument("--set_equilibrium", type=int, choices=[0,1], default=0, help="If 1, set equilibrium matrix elements to initial values; if 0, do not.")
+parser.add_argument("--zero_collision_diagonal", type=int, choices=[0,1], default=0,
+                     help="Si es 1, pone a cero la diagonal del término de colisión C; si es 0, no.")
 
 args = parser.parse_args()
 
@@ -346,6 +348,11 @@ if __name__ == "__main__":
         N_eq  = HermitianMatrix(args.N, "N_eq_{}{}_{}"+t)
         C = HermitianMatrix(args.N, "C_{}{}_{}"+t)
         C.H = Gamma.H * (N_eq.H - N.H) + (N_eq.H - N.H) * Gamma.H
+
+        if args.zero_collision_diagonal:
+            for i in range(args.N):
+                C.H[i, i] = 0
+
         code += declare(C)
 
         # QKE right-hand side: dN/dt = c*C - (i/hbar)*attenuation*[H, N].
