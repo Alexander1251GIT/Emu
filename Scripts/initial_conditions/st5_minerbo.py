@@ -11,7 +11,7 @@ import amrex_plot_tools as amrex
 # generation parameters
 # from ix=37 iy=86 iz=75 in Francois' data
 NF = 2
-nphi_equator = 16
+nphi_equator = 32
 nnue = 1.421954234999705e+33
 nnua = 1.9146237131657563e+33
 nnux = 1.9645407875568215e+33
@@ -21,7 +21,7 @@ fnux = np.array([-0.02165833, 0.07431613, -0.53545951])
 energy_erg = 20.05473294163565 * 1e6*amrex.eV
 energies_top_erg = 20.953 * 1e6*amrex.eV
 energies_bottom_erg = 15.691 * 1e6*amrex.eV
-n_directions = 92
+# n_directions = 92
 
 nnu = np.zeros((2,NF))
 nnu[0,0] = nnue
@@ -34,6 +34,8 @@ fnu[1,0,:] = nnua * fnua
 fnu[:,1:,:] = nnu[:,1:,np.newaxis] * fnux[np.newaxis,np.newaxis,:]
 
 particles = moment_interpolate_particles(nphi_equator, nnu, fnu, energy_erg, uniform_sphere, minerbo_interpolate) # [particle, variable]
+
+n_directions = particles.shape[0]
 
 # Get variable keys
 rkey, ikey = amrex.get_particle_keys(NF, ignore_pos=True)
